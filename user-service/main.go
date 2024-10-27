@@ -45,12 +45,13 @@ func main() {
 		if jsonStr, err := json.Marshal(users); err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 		} else {
-			w.Write(jsonStr)
 			w.WriteHeader(http.StatusOK)
+			w.Write(jsonStr)
 		}
 	})
 
 	srv.Handler = mux
+	srv.Addr = ":8081"
 
 	go func() {
 		if err := srv.ListenAndServe(); err != http.ErrServerClosed {

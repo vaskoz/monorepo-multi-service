@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -36,6 +37,24 @@ func main() {
 		}
 		close(idleConnsClosed)
 	}()
+
+	usersClient := &http.Client{}
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
+		req, _ := http.NewRequest("GET", "http://localhost:8081/users", nil)
+		if resp, err := usersClient.Do(req); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		} else {
+			defer resp.Body.Close()
+			w.WriteHeader(resp.StatusCode)
+			payload, _ := io.ReadAll(resp.Body)
+			w.Write(payload)
+		}
+	})
+
+	srv.Handler = mux
+	srv.Addr = ":8080"
 
 	go func() {
 		if err := srv.ListenAndServe(); err != http.ErrServerClosed {
