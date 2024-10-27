@@ -1,4 +1,4 @@
-package main
+package app
 
 // GetAllUsers returns a list of all users.
 func GetAllUsers() []User {
