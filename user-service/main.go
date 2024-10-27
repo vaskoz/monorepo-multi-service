@@ -18,6 +18,10 @@ var (
 	sigint = make(chan os.Signal, 1)
 )
 
+func StartMain() {
+	go main()
+}
+
 func main() {
 	var srv http.Server
 
